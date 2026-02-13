@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<title>Prywatna Tablica</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+  <script>
+  $( function() {
+    $( "#datepicker" ).datepicker();
+  } );
+
+
+  if (typeof window.orientation !== 'undefined') { ... }
+
+  </script>
+  <script>
+   async function copyToClipboard(text) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        console.log('Text copied successfully');
+      } else {
+        throw new Error('Clipboard API not supported');
+      }
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+   }
+
+   function handleLinkClick(text) {
+     copyToClipboard(text);
+     return false;
+   }
+  </script>
+<style>
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  padding: 12px 16px;
+  z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+</style>
+</head>
+
+<body>
+
+<div class="w3-container w3-cell w3-bar-block" style="width:20%">
+  {% load static %}
+  <h3><a href="{% url 'logout' %}" class="nav-link">
+      <img src="{% static 'res/user.png' %}" width="50" height="50" style="margin-right:5px"> Wyloguj</h3><br></a>
+  <a href="{% url 'get_memories' %}" class="w3-bar-item w3-button">All notes</a><br>
+  {% for type in types %}
+    <a href="{% url 'get_memories_types' type=type %}" class="w3-bar-item w3-button"><img src="/static/res/{{ type }}.png" alt="Image" width="30" height="30" style="margin-right:5px"> {{ type.capitalize }} </a><br>
+  {% endfor %}
+</div>
+
+<div class="w3-container w3-cell" style="width:80%">
+  <br>
+  <div class="w3-card-4 w3-round" style="width:80%; margin-bottom:45px">
+      <form action = "{% url 'new_entry' %}" method = "POST">
+        {% csrf_token %}
+        {{ form.content.errors }}
+         <input class="w3-input w3-border" id="content" type="text" name="content" style="width:100%"  placeholder="Did you find anything interesting? Put it here...">
+      </form>
+  </div>
+
+  {% for memory in memories %}
+
+  <div class="w3-card-4 w3-round" style="width:80%; margin-bottom:45px">
+    <header class="w3-container w3-light-grey">
+      <img src="/static/res/{{ memory.get_category }}.png" class="w3-left w3-circle"  width="30" height="30" style="margin-right:10px">
+      <h3>{{ memory.title }}</h3>
+      <div class="w3-right" >
+        <img src="{% static 'res/copy.png' %}" onclick="handleLinkClick({{ memory.get_clean_content }})" class="w3-left"  width="30" height="30" style="margin-right:15px">
+        <div class="dropdown w3-circle" >
+          <span>...</span>
+          <div class="dropdown-content">
+            <p><a href="{% url 'delete_entry' id=memory.id %}" class="w3-button">Usuń</a></p>
+            <p><a href="{% url 'move_entry_to_archive' id=memory.id %}" class="w3-bar-item w3-button">Archiwizuj</a></p>
+          </div>
+      </div>
+      </div><br><font color="#COCOCO" size="1px">{{ memory.get_date_string }}</font>
+    </header>
+    <div class="w3-container" style="margin-bottom:20px">
+      <form action = "{% url 'update_entry' id=memory.id %}" method = "POST">
+        {% csrf_token %}
+        {{ form.content.errors }}
+        <p contenteditable="true" id="content" name="content" >{{ memory.get_clean_content }}</p>
+      </form>
+      <hr>
+      <iframe width="560" height="315" src="{{ memory.check_if_content_has_embed }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+    </div>
+    <header class="w3-container w3-light-grey" style="margin-bottom:20px">
+      {% for tag in memory.get_tags %}
+        <a href="{% url 'get_memories_tagged' tag=tag %}">{{ tag }}</a>
+      {% endfor %}
+    </header>
+    <button class="w3-button w3-block w3-dark-grey w3-round">Udostępnij</button>
+  </div>
+
+  {% endfor %}
+
+</div>
+
+<div class="w3-container w3-cell">
+  <h3>Tags</h3>
+  <a href="{% url 'get_memories' %}">#All</a><br>
+  {% for tag in tags %}
+    <a href="{% url 'get_memories_tagged' tag=tag %}">{{ tag }} </a><br>
+  {% endfor %}
+  <h3>Calendar</h3>
+  <p>Date: <input type="text" id="datepicker"></p>
+</div>
+
+</body>
+</html>
