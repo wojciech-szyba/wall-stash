@@ -6,6 +6,7 @@ urlpatterns = [
     path('list/', views.get_memories, name='get_memories'),
     path('list/tag/<str:tag>/', views.get_memories, name='get_memories_tagged'),
     path('list/type/<str:type>/', views.get_memories, name='get_memories_types'),
+    path('list/date/<str:date>/', views.get_memories, name='get_memories_date'),
     path('register/', views.register, name='register'),
     path('login/', views.login_view, name='login_view'),
     path('logout/', views.logout_view, name='logout'),
