@@ -19,6 +19,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout as auth_logout
 from django.contrib import messages
 import re
+from datetime import datetime
 
 from .forms import MemoryForm
 
@@ -38,7 +39,7 @@ def index(request):
 
 
 @login_required
-def get_memories(request, tag=None, type=None):
+def get_memories(request, tag=None, type=None, date=None):
     memories = MemoriesModel.objects.filter(archived=0).order_by('-date')
 
     if mobile(request):
@@ -55,6 +56,9 @@ def get_memories(request, tag=None, type=None):
                 memories = memories.exclude(id=memory.id)
         if tag:
             if tag not in memory.get_tags():
+                memories = memories.exclude(id=memory.id)
+        if date:
+            if datetime.strptime(date, "%Y-%m-%d").date() != memory.date.date():
                 memories = memories.exclude(id=memory.id)
     tags = set(tags)
     context = {

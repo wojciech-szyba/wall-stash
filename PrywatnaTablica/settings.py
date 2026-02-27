@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i%yx3i5(%+0(y-b$#@13$)r&fq-5g_dj*fu5s#1!&=sg9$3sy&'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -31,7 +31,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 LOGIN_URL = '/login/'  # Gdzie przekierować niezalogowanych
-LOGIN_REDIRECT_URL = '/tablica/'  # Gdzie po zalogowaniu
+LOGIN_REDIRECT_URL = '/list/'  # Gdzie po zalogowaniu
 LOGOUT_REDIRECT_URL = '/login/'
 
 # Application definition
