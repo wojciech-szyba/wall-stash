@@ -1,6 +1,10 @@
 # Local
 
 cd wall-stash \
+python3 manage.py makemigrations \
+python3 manage.py makemigrations WallStashApp \
+python3 manage.py migrate \
+python3 manage.py createsuperuser \
 python3 manage.py runserver
 
 # VPS
@@ -25,6 +29,12 @@ source venv/bin/activate
 pip install --upgrade pip \
 pip install -r requirements.txt
 
+## Django initial setup
+python3 manage.py makemigrations \
+python3 manage.py makemigrations WallStashApp \
+python3 manage.py migrate \
+python3 manage.py createsuperuser \
+
 ## User settings
 sudo chown -R webapp:www-data /var/www/wall-stash/ \
 chmod -R 755 /var/www/wall-stash/ \
@@ -33,3 +43,4 @@ chmod 700 /var/www/wall-stash//venv
 ## Service setup (gunicorn)
 nano /etc/systemd/system/wall-stash.service \
 sudo systemctl daemon-reload && sudo systemctl restart wall-stash
+
