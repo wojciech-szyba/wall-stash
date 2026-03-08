@@ -40,6 +40,9 @@ sudo chown -R webapp:www-data /var/www/wall-stash/ \
 chmod -R 755 /var/www/wall-stash/ \
 chmod 700 /var/www/wall-stash//venv
 
+## Test
+sudo -u webapp bash -c 'cd /var/www/wall-stash/ && /var/www/wall-stash/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:30259 wall-stash.wsgi:application'
+
 ## Service setup (gunicorn)
 nano /etc/systemd/system/wall-stash.service \
 sudo systemctl daemon-reload && sudo systemctl restart wall-stash

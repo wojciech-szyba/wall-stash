@@ -1,0 +1,15 @@
+[Unit]
+Description=Wall Stash Django App
+After=network.target
+
+[Service]
+Type=notify
+User=webapp
+Group=www-data
+WorkingDirectory=/var/www/wall-stash
+Environment="PATH=/var/www/wall-stash/venv/bin"
+ExecStart=/var/www/wall-stash/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:30259 WallStash.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
