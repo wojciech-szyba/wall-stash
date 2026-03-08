@@ -4,7 +4,7 @@
  terms of the GNU GENERAL PUBLIC LICENSE license,
  You should have received a copy of the license with
  this file. If not, please visit :
-https://github.com/wojciech-szyba/stash-wall/blob/main/LICENSE
+https://github.com/wojciech-szyba/wall-stash/blob/main/LICENSE
  */
 """
 
