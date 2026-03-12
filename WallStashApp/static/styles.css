@@ -54,3 +54,4 @@ body.login-page {
 
 .btn-login:hover {
     opacity: 0.8;  /* Prefer over 0.5 to avoid full fade */
+}

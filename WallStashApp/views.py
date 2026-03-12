@@ -50,7 +50,7 @@ def get_memories(request, tag=None, type=None, date=None):
     types = []
     for memory in memories:
         tags = tags + memory.get_tags()
-        types = [type for type in memory.get_categories]
+        types.append(memory.get_category)
         if type:
             if type not in memory.get_category:
                 memories = memories.exclude(id=memory.id)
@@ -61,6 +61,7 @@ def get_memories(request, tag=None, type=None, date=None):
             if datetime.strptime(date, "%Y-%m-%d").date() != memory.date.date():
                 memories = memories.exclude(id=memory.id)
     tags = set(tags)
+    types = set(types)
     context = {
         'memories': memories,
         'tags': tags,

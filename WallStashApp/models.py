@@ -12,13 +12,11 @@ from django.db import models
 from django.urls import reverse
 
 from datetime import datetime
+from .embeds import extract_embed_sources, extract_urls
 from urllib.parse import urlparse
 
 CONTENT_ASSOCIATIONS = {
-    'youtube.com': 'youtube',
-    'def ': 'sourcecode',
-    'open.spotify.com': 'spotify',
-    'www.': 'website'
+    'def ': 'sourcecode'
 }
 
 
@@ -59,33 +57,9 @@ class MemoriesModel(models.Model):
             return self.date
 
     @property
-    def check_if_content_has_embed(self):
-        if 'youtube' in self.content:
-            if '.com' in self.content:
-                replace_prefix = self.content.replace("https://", "//")
-                replace_watch_by_embed = replace_prefix.replace("watch?v=", "embed/")
-                return replace_watch_by_embed
-            else:
-                return self.content
-        else:
-            return self.content
+    def get_embeds(self):
+        return extract_embed_sources(self.content)
 
-    @property
-    def extract_embed_source(content):
-        url_data = urlparse(content)
-        print(url_data)
-        if url_data.query:
-            query_items = url_data.query.split('&')
-            for query_item in query_items:
-                if 'v=' in query_item:
-                    return query_item.replace('v=', '')
-                else:
-                    pass
-            embed = url_data.path.split('/')[-1]
-        else:
-            embed = url_data.path.split('/')[-1]
-
-        return f'https://www.youtube.com/embed/{embed}'
 
     def get_tags(self):
         lines = self.content.splitlines()
@@ -99,6 +73,11 @@ class MemoriesModel(models.Model):
         for key in CONTENT_ASSOCIATIONS.keys():
             if key in self.content:
                 return CONTENT_ASSOCIATIONS[key]
+        if extract_urls(self.content):
+                url, *_ = extract_urls(self.content)
+                url_parsed = urlparse(url)
+                return url_parsed.netloc
+        return 'sourcecode'
 
     @property
     def get_categories(self):
@@ -107,7 +86,10 @@ class MemoriesModel(models.Model):
 
     @property
     def get_title(self):
-        return f'{self.get_category.capitalize()} note'
+        if self.get_category:
+            return f'{self.get_category.capitalize()} note'
+        else:
+            return 'Note'
 
     # Methods
     def get_absolute_url(self):
