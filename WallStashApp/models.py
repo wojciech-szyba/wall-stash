@@ -18,7 +18,8 @@ from urllib.parse import urlparse
 CONTENT_ASSOCIATIONS = {
     'sourcecode': 'Code snippet',
     'website': 'Website note',
-    'note': 'Plain text note'
+    'note': 'Plain text note',
+    'idea': 'Idea note'
 }
 
 
@@ -78,6 +79,8 @@ class MemoriesModel(models.Model):
     def get_category(self):
         if extract_urls(self.content):
                 return 'website'
+        if '#idea' in self.content:
+            return 'idea'
         if is_code_snippet(self.content):
             return 'sourcecode'
         return 'note'
@@ -88,6 +91,8 @@ class MemoriesModel(models.Model):
             main_url, *_ = extract_urls(self.content)
             base_url = urlparse(main_url)
             return f'//{base_url.netloc}/favicon.ico'
+        if '#idea' in self.content:
+            return '/static/res/idea.png'
         if is_code_snippet(self.content):
             return '/static/res/sourcecode.png'
         return '/static/res/plain.png'
