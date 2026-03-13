@@ -12,12 +12,16 @@ from django.db import models
 from django.urls import reverse
 
 from datetime import datetime
-from .embeds import extract_embed_sources, extract_urls
+from .embeds import extract_embed_sources, extract_urls, is_code_snippet
 from urllib.parse import urlparse
 
 CONTENT_ASSOCIATIONS = {
-    'def ': 'sourcecode'
+    'sourcecode': 'Code snippet',
+    'website': 'Website note',
+    'note': 'Plain text note'
 }
+
+
 
 
 class MemoriesModel(models.Model):
@@ -39,6 +43,8 @@ class MemoriesModel(models.Model):
         lines = self.content.splitlines()
         lst = []
         for line in lines:
+            if len(line.strip()) > 255:
+                line = f'{line[0:255]}<br>{line[255:]}'
             lst = lst + [x for x in line.strip().split(' ') if not x.startswith('#')]
         return ' '.join(lst)
 
@@ -70,14 +76,21 @@ class MemoriesModel(models.Model):
 
     @property
     def get_category(self):
-        for key in CONTENT_ASSOCIATIONS.keys():
-            if key in self.content:
-                return CONTENT_ASSOCIATIONS[key]
         if extract_urls(self.content):
-                url, *_ = extract_urls(self.content)
-                url_parsed = urlparse(url)
-                return url_parsed.netloc
-        return 'sourcecode'
+                return 'website'
+        if is_code_snippet(self.content):
+            return 'sourcecode'
+        return 'note'
+
+    @property
+    def get_category_image(self):
+        if extract_urls(self.content):
+            main_url, *_ = extract_urls(self.content)
+            base_url = urlparse(main_url)
+            return f'//{base_url.netloc}/favicon.ico'
+        if is_code_snippet(self.content):
+            return '/static/res/sourcecode.png'
+        return '/static/res/plain.png'
 
     @property
     def get_categories(self):
@@ -87,7 +100,7 @@ class MemoriesModel(models.Model):
     @property
     def get_title(self):
         if self.get_category:
-            return f'{self.get_category.capitalize()} note'
+            return f'{CONTENT_ASSOCIATIONS[self.get_category]}'
         else:
             return 'Note'
 

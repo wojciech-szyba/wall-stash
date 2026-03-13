@@ -50,9 +50,11 @@ def get_memories(request, tag=None, type=None, date=None):
     types = []
     for memory in memories:
         tags = tags + memory.get_tags()
-        types.append(memory.get_category)
+        category = memory.get_category_image.replace('favicon.ico', '').replace('/', '')
+
+        types.append((category, memory.get_category_image))
         if type:
-            if type not in memory.get_category:
+            if type not in category:
                 memories = memories.exclude(id=memory.id)
         if tag:
             if tag not in memory.get_tags():
@@ -65,7 +67,7 @@ def get_memories(request, tag=None, type=None, date=None):
     context = {
         'memories': memories,
         'tags': tags,
-        'types': types,
+        'types': types
     }
     return HttpResponse(template.render(context, request))
 

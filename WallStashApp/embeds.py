@@ -1,3 +1,13 @@
+"""
+ Copyright (C) 2026 Wojciech Szyba - All Rights Reserved
+ You may use, distribute and modify this code under the
+ terms of the GNU GENERAL PUBLIC LICENSE license,
+ You should have received a copy of the license with
+ this file. If not, please visit :
+https://github.com/wojciech-szyba/wall-stash/blob/main/LICENSE
+ */
+"""
+
 from urllib.parse import urlparse
 from abc import ABC, abstractmethod
 from typing import Any
@@ -102,3 +112,17 @@ def extract_embed_sources(content):
         if handler:
             yield handler.get_embed()
     return None
+
+def is_code_snippet(text):
+    def_pattern = r'^\s*def\s+\w+\s*\([^)]*\)\s*:'
+    class_pattern = r'^\s*class\s+\w+\s*\([^)]*\)\s*:'
+    brackets_pattern = r'^\s*[{}]'
+    functions = re.findall(def_pattern, text, re.MULTILINE)
+    classes = re.findall(class_pattern, text, re.MULTILINE)
+    brackets = re.findall(brackets_pattern, text, re.MULTILINE)
+    if functions or classes:
+        return 1
+    elif brackets:
+        return 1
+    else:
+        return 0
