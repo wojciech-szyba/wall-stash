@@ -12,6 +12,7 @@ from .models import MemoriesModel
 from .forms import LoginForm, RegisterForm
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.template import loader
 from django.urls import reverse
@@ -64,8 +65,11 @@ def get_memories(request, tag=None, type=None, date=None):
                 memories = memories.exclude(id=memory.id)
     tags = set(tags)
     types = set(types)
+    paginator = Paginator(memories, 10)  # Show 10 items per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     context = {
-        'memories': memories,
+        'page_obj': page_obj
         'tags': tags,
         'types': types
     }
